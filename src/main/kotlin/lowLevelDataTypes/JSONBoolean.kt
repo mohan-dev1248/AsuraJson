@@ -1,5 +1,5 @@
 package lowLevelDataTypes
 
-class JSONBoolean(val bool: Boolean) : JSONValue{
+class JSONBoolean(val bool: Boolean) : JSONValue {
 
 }
