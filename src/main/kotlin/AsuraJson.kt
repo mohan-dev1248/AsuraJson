@@ -28,7 +28,11 @@ class AsuraJson {
         when (json) {
             is JSONNull -> return "null"
             is JSONBoolean -> return json.bool.toString()
+            is JSONInt -> return json.data.toString()
+            is JSONLong -> return json.value.toString()
             is JSONDouble -> return json.value.toString()
+            is JSONBigInteger -> return json.bigInteger.toString()
+            is JSONBigDecimal -> return json.bigDecimal.toString()
             is JSONString -> return "\"${json.string}\""
             is JSONArray -> {
                 var string = "["
@@ -45,8 +49,10 @@ class AsuraJson {
                 var string = "{"
                 if (json.length > 0) {
                     val kvps = json.getListofKeyValuePairs()
-                    for (i in 0..kvps.size - 1) {
-                        string += "\"${kvps.get(i).first}\"" + ":"
+                    string += "\"${kvps.get(0).first}\"" + ":"
+                    string += serialize(kvps.get(0).second)
+                    for (i in 1..kvps.size - 1) {
+                        string += "," + "\"${kvps.get(i).first}\"" + ":"
                         string += serialize(kvps.get(i).second)
                     }
                 }

@@ -1,14 +1,14 @@
 import lowLevelDataTypes.*
 
 object Parser {
-    fun parseNull(json: String): Pair<JSONNull, String>? {
+    private fun parseNull(json: String): Pair<JSONNull, String>? {
         if (json.length > 3 && json.subSequence(0, 4) == "null") {
             return Pair(JSONNull(), json.subSequence(4, json.length).toString())
         }
         return null
     }
 
-    fun parseBoolean(json: String): Pair<JSONBoolean, String>? {
+    private fun parseBoolean(json: String): Pair<JSONBoolean, String>? {
         if (json.length > 3 && json.subSequence(0, 4) == "true") {
             return Pair(JSONBoolean(true), json.subSequence(4, json.length).toString())
         }
@@ -18,17 +18,52 @@ object Parser {
         return null
     }
 
-    fun parseNumber(json: String): Pair<JSONDouble, String>? {
+    private fun parseNumber(json: String): Pair<JSONValue, String>? {
         val expression =
             "-?(0|[1-9][0-9]*)((.[0-9]+)?([eE][+-]?[0-9]+)?)?".toRegex()//|(0(.[0-9]+)([eE][+-]?[0-9]+)?)".toRegex()
         val obj = expression.find(json, 0)?.value
         if (obj != null && obj.toString() == json.subSequence(0, obj.length)) {
-            return Pair(JSONDouble(obj.toString().toDouble()), expression.split(json, 2).get(1))
+            return Pair(getNumberWithDataType(obj.toString())!!, expression.split(json, 2).get(1))
         }
         return null
     }
 
-    fun parseString(json: String): Pair<JSONString, String>? {
+    private fun getNumberWithDataType(number: String): JSONValue?{
+        try{
+            val obj = number.toInt()
+            return JSONInt(obj)
+        }catch (e : NumberFormatException){
+            //The number is not an integer
+        }
+        try{
+            val obj = number.toLong()
+            return  JSONLong(obj)
+        }catch (e: NumberFormatException){
+            //The number is not a long
+        }
+        try{
+            val obj = number.toBigInteger()
+            return  JSONBigInteger(obj)
+        }catch (e: NumberFormatException){
+            //The number is not a BigInteger
+        }
+        try {
+            val obj = number.toDouble()
+            return JSONDouble(obj)
+        }catch (e: NumberFormatException){
+            //The number is not a Double value
+        }
+        try{
+            val obj = number.toBigDecimal()
+            return JSONBigDecimal(obj)
+        }catch (e: NumberFormatException){
+            //The number is not a BigDecimal
+        }
+
+        return null
+    }
+
+    private fun parseString(json: String): Pair<JSONString, String>? {
         if (json.length > 0 && json[0] == '\"') {
             var string: String = ""
             var parsedLength = 1
@@ -51,7 +86,7 @@ object Parser {
         return null
     }
 
-    fun parseArray(json: String): Pair<JSONArray, String>? {
+    private fun parseArray(json: String): Pair<JSONArray, String>? {
         if (json[0] == '[') {
             var jsonArray = JSONArray()
             var currentString = json.subSequence(1, json.length).toString()
@@ -76,7 +111,7 @@ object Parser {
         return null
     }
 
-    fun parseObject(json: String): Pair<JSONObject, String>? {
+    private fun parseObject(json: String): Pair<JSONObject, String>? {
         if (json[0] == '{') {
             var jsonObject = JSONObject()
             var currentString = json.subSequence(1, json.length).toString()
@@ -101,7 +136,7 @@ object Parser {
         return null
     }
 
-    fun parseKeyValue(json: String): Pair<Pair<String, JSONValue>, String>? {
+    private fun parseKeyValue(json: String): Pair<Pair<String, JSONValue>, String>? {
         val pair = parseString(json)
         if (pair == null) {
             return null
@@ -121,37 +156,30 @@ object Parser {
 
     fun parseJson(json: String): Pair<JSONValue, String>? {
         var pair: Pair<JSONValue, String>? = Pair(JSONNull(), "")
-
         pair = parseNull(json)
         if (pair != null) {
             return pair
         }
-
         pair = parseBoolean(json)
         if (pair != null) {
             return pair
         }
-
         pair = parseNumber(json)
         if (pair != null) {
             return pair
         }
-
         pair = parseString(json)
         if (pair != null) {
             return pair
         }
-
         pair = parseArray(json)
         if (pair != null) {
             return pair
         }
-
         pair = parseObject(json)
         if (pair != null) {
             return pair
         }
-
         return null
     }
 
