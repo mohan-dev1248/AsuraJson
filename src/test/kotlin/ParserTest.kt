@@ -14,14 +14,14 @@ class ParserTest {
         var input = inputFile.readText()
 
 
-        var pair: Pair<JSONValue,String> ?= Parser.nullParse(input)
+        var pair: Pair<JSONValue,String> ?= Parser.parseJson(input)
 
         assertEquals(true, pair!!.first is JSONNull)
 
         inputFile = File(path+ "notNull.json")
         input = inputFile.readText()
 
-        pair = Parser.nullParse(input)
+        pair = Parser.parseJson(input)
 
         assert(null == pair)
     }
@@ -32,7 +32,7 @@ class ParserTest {
         var input = inputFile.readText()
 
 
-        var pair: Pair<JSONValue,String> ?= Parser.booleanParse(input)
+        var pair: Pair<JSONValue,String> ?= Parser.parseJson(input)
         assertEquals(true, pair!!.first is JSONBoolean)
 
         var obj = pair!!.first as JSONBoolean
@@ -41,7 +41,7 @@ class ParserTest {
         inputFile = File(path + "false.json")
         input = inputFile.readText()
 
-        pair = Parser.booleanParse(input)
+        pair = Parser.parseJson(input)
         assertEquals(true, pair!!.first is JSONBoolean)
 
         obj = pair!!.first as JSONBoolean
@@ -50,37 +50,34 @@ class ParserTest {
         inputFile = File(path + "notBool.json")
         input = inputFile.readText()
 
-        pair = Parser.booleanParse(input)
+        pair = Parser.parseJson(input)
         assert(null==pair)
     }
 
     @Test
     fun testBasicBlocks() {
-        var json: JSONValue ?= Parser.parse("[]")
+        var json: Pair<JSONValue, String> ?= Parser.parseJson("[]")
 
-        assertEquals(true,json is JSONArray)
+        assertEquals(true,json!!.first is JSONArray)
 
-        json = Parser.parse("{}")
-        assertEquals(true, json is JSONObject)
+        json = Parser.parseJson("{}")
+        assertEquals(true, json!!.first is JSONObject)
 
-        json = Parser.parse("\"A JSON payload should be an object or array, not a string.\"")
+        json = Parser.parseJson("[\"Unclosed array\"")
         assert(json==null)
 
-        json = Parser.parse("[\"Unclosed array\"")
-        assert(json==null)
-
-        json = Parser.parse("{\"Unclosed object\"")
+        json = Parser.parseJson("{\"Unclosed object\"")
         assert(json==null)
     }
 
     @Test
     fun testObject(){
-        var json: JSONValue ?= Parser.parse("{unquoted_key: \"keys must be quoted\"}")
+        var json: Pair<JSONValue, String>? = Parser.parseJson("{unquoted_key: \"keys must be quoted\"}")
 
         assert(json==null)
 
-        json = Parser.parse("{\"FirstName\": \"Mohanakrishna\"}")
-        assertEquals(true, json is JSONObject)
+        json = Parser.parseJson("{\"FirstName\": \"Mohanakrishna\"}")
+        assertEquals(true, json!!.first is JSONObject)
     }
 
 
