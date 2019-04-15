@@ -1,11 +1,20 @@
-import lowLevelDataTypes.*
 import java.io.File
+import  org.json.JSONObject
 
 fun main(args: Array<String>) {
     val asura = AsuraJson();
 
-    val file = File("./src/test/testCases/redit.json")
-    val pair = Parser.parseJson(file.readText())
+    val file = File("./src/test/testCases/test.txt")
+    val str = file.readText()
 
-    println(asura.serialize(pair!!.first))
+    val jsonValue = Parser.parse(str)
+    println(jsonValue)
+
+    println(asura.serialize(jsonValue!!))
+//    val out = pair!!.first as JSONString
+//    println("${out.string}  ${out.string.length}")
+
+//    val obj = asura.fromJson<Double>("256.657")
+//
+//    println(obj)
 }

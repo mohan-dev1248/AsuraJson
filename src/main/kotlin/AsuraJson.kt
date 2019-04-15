@@ -6,22 +6,43 @@ class AsuraJson {
 
     }
 
-    fun fromJson(jsonString: String) {
+    fun <T> fromJson(json: String): T? {
+        val jsonValue: JSONValue? = parse(json)
+        when (jsonValue) {
+            is JSONNull -> return null
+            is JSONBoolean -> {
+                try {
+                    return jsonValue.bool as T
+                } catch (e: Exception) {
+                    println("Unable to get you the required type")
+                }
+            }
+            is JSONInt -> {
+                try {
+                    return jsonValue.data as T
+                } catch (e: Exception) {
+                    println("Unable to get you the required type")
+                }
+            }
+            is JSONLong -> return jsonValue.value as T
+            is JSONDouble -> return jsonValue.value as T
+            is JSONBigInteger -> return jsonValue.bigInteger as T
+            is JSONBigDecimal -> return jsonValue.bigDecimal as T
+            is JSONString -> return "\"${jsonValue.string}\"" as T
+            is JSONArray -> {
 
-    }
+            }
+            is JSONObject -> {
 
-    fun <T : Any> fromJson(json: String, clazz: Class<T>): Any? {
-
-        if (clazz == Int.javaClass) {
-            val obj = json.toInt()
-            return obj
+            }
+            else -> return null
         }
 
         return null
     }
 
     fun parse(json: String): JSONValue? {
-        return Parser.parseJson(json)?.first
+        return Parser.parse(json)
     }
 
     fun serialize(json: JSONValue): String {
