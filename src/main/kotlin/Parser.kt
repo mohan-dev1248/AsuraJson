@@ -8,12 +8,10 @@ object Parser {
                                             else Pair(JSONNull(), json.subSequence(4, json.length).toString())
 
     private fun parseBoolean(json: String): Pair<JSONBoolean, String>? {
-        if (json.startsWith("true")) {
+        if (json.startsWith("true"))
             return Pair(JSONBoolean(true), json.subSequence(4, json.length).toString())
-        }
-        if (json.startsWith("false")) {
+        if (json.startsWith("false"))
             return Pair(JSONBoolean(false), json.subSequence(5, json.length).toString())
-        }
         return null
     }
 
@@ -28,7 +26,7 @@ object Parser {
         var string = ""
         var parsedLength = 1
         while (parsedLength < json.length && json[parsedLength] != '\"') {
-            val list = arrayListOf<Char>('\t', '\r', '\b', '\n')
+            val list = arrayListOf<Char>('\t', '\r', '\b', '\n', (12).toChar())
             if (list.contains(json[parsedLength])) return null
             if (json[parsedLength] == '\\') {
                 val char = if (parsedLength + 1 < json.length) {
@@ -82,14 +80,14 @@ object Parser {
             if (pair!!.second.trimStart().startsWith(",")) {
                 currentString =
                     pair!!.second.trimStart().subSequence(1, pair!!.second.trimStart().length).toString()
-            } else if (pair!!.second.trimStart().startsWith("]")) {
+                continue
+            }
+            if (pair!!.second.trimStart().startsWith("]"))
                 return Pair(
                     jsonArray,
                     pair!!.second.trimStart().subSequence(1, pair!!.second.trimStart().length).toString()
                 )
-            } else {
-                return null
-            }
+            return null
         } while (currentString.length > 0);
         return null
     }
@@ -113,14 +111,14 @@ object Parser {
                 if (pair!!.second.trimStart().startsWith(",")) {
                     currentString =
                         pair!!.second.trimStart().subSequence(1, pair!!.second.trimStart().length).toString()
-                } else if (pair!!.second.trimStart().startsWith("}")) {
+                    continue
+                }
+                if (pair!!.second.trimStart().startsWith("}"))
                     return Pair(
                         jsonObject,
                         pair!!.second.trimStart().subSequence(1, pair!!.second.trimStart().length).toString()
                     )
-                } else {
-                    return null
-                }
+                return null
             } while (currentString.length > 0)
         }
         return null
@@ -140,29 +138,11 @@ object Parser {
 
     private fun parseJson(json: String): Pair<JSONValue, String>? {
         var pair: Pair<JSONValue, String>? = Pair(JSONNull(), "")
-        pair = parseNull(json)
-        if (pair != null) {
-            return pair
-        }
-        pair = parseBoolean(json)
-        if (pair != null) {
-            return pair
-        }
-        pair = parseNumber(json)
-        if (pair != null) {
-            return pair
-        }
-        pair = parseString(json)
-        if (pair != null) {
-            return pair
-        }
-        pair = parseArray(json)
-        if (pair != null) {
-            return pair
-        }
-        pair = parseObject(json)
-        if (pair != null) {
-            return pair
+        val parseFunctions =
+            arrayOf(::parseNull, ::parseBoolean, ::parseNumber, ::parseString, ::parseArray, ::parseObject)
+        for (function in parseFunctions) {
+            pair = function(json)
+            if (pair != null) return pair
         }
         return null
     }

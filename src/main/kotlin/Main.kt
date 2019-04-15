@@ -4,7 +4,7 @@ import  org.json.JSONObject
 fun main(args: Array<String>) {
     val asura = AsuraJson();
 
-    val file = File("./src/test/testCases/test.txt")
+    val file = File("./src/test/testCases/string.json")
     val str = file.readText()
 
     val jsonValue = Parser.parse(str)
