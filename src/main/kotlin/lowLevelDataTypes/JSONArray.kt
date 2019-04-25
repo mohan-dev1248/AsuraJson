@@ -1,7 +1,5 @@
 package lowLevelDataTypes
 
-import lowLevelDataTypes.JSONValue
-
 class JSONArray : JSONValue {
     private var content = mutableListOf<JSONValue>()
 
@@ -13,7 +11,7 @@ class JSONArray : JSONValue {
         get() = content.size
 
     fun getAt(index: Int): JSONValue? {
-        return content.get(index)
+        return content[index]
     }
 
 }

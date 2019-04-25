@@ -7,8 +7,7 @@ class AsuraJson {
     }
 
     fun <T> fromJson(json: String): T? {
-        val jsonValue: JSONValue? = parse(json)
-        when (jsonValue) {
+        when (val jsonValue: JSONValue? = parse(json)) {
             is JSONNull -> return null
             is JSONBoolean -> {
                 try {
@@ -59,7 +58,7 @@ class AsuraJson {
                 var string = "["
                 if (json.length > 0) {
                     string += serialize(json.getAt(0)!!)
-                    for (i in 1..json.length - 1) {
+                    for (i in 1 until json.length) {
                         string += "," + serialize(json.getAt(i)!!)
                     }
                 }
@@ -70,11 +69,11 @@ class AsuraJson {
                 var string = "{"
                 if (json.length > 0) {
                     val kvps = json.getListofKeyValuePairs()
-                    string += "\"${kvps.get(0).first}\"" + ":"
-                    string += serialize(kvps.get(0).second)
-                    for (i in 1..kvps.size - 1) {
-                        string += "," + "\"${kvps.get(i).first}\"" + ":"
-                        string += serialize(kvps.get(i).second)
+                    string += "\"${kvps[0].first}\"" + ":"
+                    string += serialize(kvps[0].second)
+                    for (i in 1 until kvps.size) {
+                        string += "," + "\"${kvps[i].first}\"" + ":"
+                        string += serialize(kvps[i].second)
                     }
                 }
                 string += "}"

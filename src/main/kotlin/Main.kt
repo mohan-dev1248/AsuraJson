@@ -1,8 +1,7 @@
 import java.io.File
-import  org.json.JSONObject
 
-fun main(args: Array<String>) {
-    val asura = AsuraJson();
+fun main() {
+    val asura = AsuraJson()
 
     val file = File("./src/test/testCases/string.json")
     val str = file.readText()

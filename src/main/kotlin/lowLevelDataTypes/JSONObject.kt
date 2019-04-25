@@ -1,12 +1,10 @@
 package lowLevelDataTypes
 
-import java.math.BigInteger
-
 class JSONObject : JSONValue {
     private var content = mutableMapOf<String, JSONValue>()
 
-    fun add(key: String, value: JSONValue): Unit {
-        content.put(key, value)
+    fun add(key: String, value: JSONValue){
+        content[key] = value
     }
 
     var length: Int = 0
@@ -14,7 +12,7 @@ class JSONObject : JSONValue {
 
 
     fun get(key: String): JSONValue? {
-        return content.get(key)
+        return content[key]
     }
 
     fun getListofKeyValuePairs(): List<Pair<String, JSONValue>> {
